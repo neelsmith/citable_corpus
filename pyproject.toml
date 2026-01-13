@@ -1,0 +1,7 @@
+[project]
+name = "citable_corpus"
+version = "0.0.1"
+description = "A Python library for working with a corpus of texts canonically citable by CtsUrn."
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = []
