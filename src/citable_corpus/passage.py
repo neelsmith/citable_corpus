@@ -15,7 +15,7 @@ class CitablePassage(BaseModel):
         return f"{self.urn}: {self.text}"
     
     @classmethod
-    def from_string(cls, s: str, delimiter: str = "|") -> "CitablePassage":
+    def from_string(cls, src: str, delimiter: str = "|") -> "CitablePassage":
         """Create a CitablePassage from a delimited-text string.
         
         Args:
@@ -25,7 +25,7 @@ class CitablePassage(BaseModel):
         Returns:
             CitablePassage: The created CitablePassage object.
         """
-        urn_str, text = s.split(delimiter, 1)
+        urn_str, text = src.split(delimiter, 1)
         urn = CtsUrn.from_string(urn_str.strip())
         return cls(urn=urn, text=text.strip())
     
