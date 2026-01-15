@@ -22,6 +22,25 @@ class TestCitableCorpus(unittest.TestCase):
 		self.assertEqual(str(corpus.passages[1].urn), "urn:cts:latinLit:phi0959.phi006:1.2")
 		self.assertEqual(corpus.passages[1].text, "Dolor sit amet.")
 
+	def test_len_with_passages(self):
+		"""Test __len__ method returns correct count."""
+		corpus = CitableCorpus.from_string(self.input_str)
+		self.assertEqual(len(corpus), 2)
+		self.assertEqual(len(corpus), len(corpus.passages))
+
+	def test_len_empty_corpus(self):
+		"""Test __len__ method with empty corpus."""
+		corpus = CitableCorpus.from_string("")
+		self.assertEqual(len(corpus), 0)
+
+	def test_len_with_cex_file(self):
+		"""Test __len__ method with corpus loaded from CEX file."""
+		hyginus_path = os.path.join(self.test_data_dir, "hyginus.cex")
+		corpus = CitableCorpus.from_cex_file(hyginus_path)
+		# Hyginus corpus has 1234 passages
+		self.assertEqual(len(corpus), 1234)
+		self.assertEqual(len(corpus), len(corpus.passages))
+
 	def test_from_string_custom_delimiter(self):
 		lines = [
 			"urn:cts:latinLit:phi0959.phi006:1.1---Lorem ipsum",
