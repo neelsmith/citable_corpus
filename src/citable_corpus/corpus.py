@@ -14,7 +14,7 @@ class CitableCorpus(BaseModel):
 
 
     @classmethod
-    def from_string(cls, s: str, delimiter: str = "|") -> List[CitablePassage]:
+    def from_string(cls, s: str, delimiter: str = "|") -> CitableCorpus:
         """Create a CitableCorpus from a delimited-text string.
         
         Args:
