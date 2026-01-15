@@ -22,19 +22,19 @@ class TestCitablePassage(unittest.TestCase):
     def test_from_string_default_delimiter(self):
         s = f"{self.urn_str}|{self.text}"
         passage = CitablePassage.from_string(s)
-        self.assertEqual(passage.urn.to_string(), self.urn_str)
+        self.assertEqual(str(passage.urn), self.urn_str)
         self.assertEqual(passage.text, self.text)
 
     def test_from_string_custom_delimiter(self):
         s = f"{self.urn_str}---{self.text}"
         passage = CitablePassage.from_string(s, delimiter="---")
-        self.assertEqual(passage.urn.to_string(), self.urn_str)
+        self.assertEqual(str(passage.urn), self.urn_str)
         self.assertEqual(passage.text, self.text)
 
     def test_from_string_with_whitespace(self):
         s = f"  {self.urn_str}  |  {self.text}  "
         passage = CitablePassage.from_string(s)
-        self.assertEqual(passage.urn.to_string(), self.urn_str)
+        self.assertEqual(str(passage.urn), self.urn_str)
         self.assertEqual(passage.text, self.text)
 
     def test_from_string_invalid_format(self):

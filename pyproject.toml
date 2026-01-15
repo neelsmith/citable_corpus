@@ -7,7 +7,7 @@ requires-python = ">=3.14"
 dependencies = [
     "ipython",
     "pydantic",
-    "urn-citation>=0.2.0",
+    "urn-citation>=0.3.0",
     "cite-exchange"
 ]
 
@@ -17,3 +17,8 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/citable_corpus"]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+]
