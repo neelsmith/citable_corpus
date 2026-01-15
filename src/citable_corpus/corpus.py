@@ -15,7 +15,7 @@ class CitableCorpus(BaseModel):
     passages: List[CitablePassage]
 
 
-    def len(self) -> int:
+    def __len__(self) -> int:
         """Get the number of passages in the corpus.
         
         Returns:
