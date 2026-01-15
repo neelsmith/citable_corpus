@@ -7,7 +7,7 @@ requires-python = ">=3.14"
 dependencies = [
     "ipython",
     "pydantic",
-    "urn-citation>=0.3.0",
+    "urn-citation>=0.4.1",
     "cite-exchange"
 ]
 

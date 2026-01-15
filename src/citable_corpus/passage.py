@@ -10,8 +10,7 @@ class CitablePassage(BaseModel):
     """
     urn: CtsUrn
     text: str
-
-    
+  
     def __str__(self):
         return f"{self.urn}: {self.text}"
     
