@@ -8,7 +8,7 @@ dependencies = [
     "ipython",
     "pydantic",
     "urn-citation>=0.4.1",
-    "cite-exchange"
+    "cite-exchange>=0.2.0"
 ]
 
 [build-system]

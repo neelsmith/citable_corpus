@@ -271,5 +271,105 @@ class TestCitableCorpus(unittest.TestCase):
 		self.assertEqual(str(results[0].urn), "urn:cts:latinLit:stoa1263.stoa001.hc:pr.1")
 		self.assertEqual(str(results[-1].urn), "urn:cts:latinLit:stoa1263.stoa001.hc:pr.3")
 
+	def test_to_cex_with_label(self):
+		"""Test converting corpus to CEX format with label."""
+		corpus = CitableCorpus.from_string(self.input_str)
+		cex_output = corpus.to_cex()
+		
+		# Should include the #!ctsdata label
+		self.assertIn("#!ctsdata", cex_output)
+		
+		# Should contain the URNs and text
+		self.assertIn("urn:cts:latinLit:phi0959.phi006:1.1|Lorem ipsum", cex_output)
+		self.assertIn("urn:cts:latinLit:phi0959.phi006:1.2|Dolor sit amet.", cex_output)
+		
+		# Verify the data lines are present (excluding the label)
+		lines = cex_output.strip().split('\n')
+		self.assertGreater(len(lines), 2)  # Should have label + data lines
+
+	def test_to_cex_without_label(self):
+		"""Test converting corpus to CEX format without label."""
+		corpus = CitableCorpus.from_string(self.input_str)
+		cex_output = corpus.to_cex(include_label=False)
+		
+		# Should NOT include the #!ctsdata label
+		self.assertNotIn("#!", cex_output)
+		
+		# Should contain the URNs and text
+		self.assertIn("urn:cts:latinLit:phi0959.phi006:1.1|Lorem ipsum", cex_output)
+		self.assertIn("urn:cts:latinLit:phi0959.phi006:1.2|Dolor sit amet.", cex_output)
+		
+		# Verify it can be round-tripped with from_string (since no label)
+		corpus2 = CitableCorpus.from_string(cex_output)
+		self.assertEqual(len(corpus2), 2)
+
+	def test_to_cex_custom_delimiter(self):
+		"""Test converting corpus to CEX format with custom delimiter."""
+		corpus = CitableCorpus.from_string(self.input_str)
+		cex_output = corpus.to_cex(delimiter="---", include_label=False)
+		
+		# Should use custom delimiter
+		self.assertIn("urn:cts:latinLit:phi0959.phi006:1.1---Lorem ipsum", cex_output)
+		self.assertIn("urn:cts:latinLit:phi0959.phi006:1.2---Dolor sit amet.", cex_output)
+		
+		# Should NOT contain default delimiter
+		self.assertNotIn("|Lorem ipsum", cex_output)
+
+	def test_to_cex_empty_corpus(self):
+		"""Test converting empty corpus to CEX format."""
+		corpus = CitableCorpus.from_string("")
+		cex_output = corpus.to_cex()
+		
+		# Should include label
+		self.assertIn("#!ctsdata", cex_output)
+		
+		# Content should be minimal (just the label)
+		lines = [l for l in cex_output.split('\n') if l.strip()]
+		self.assertEqual(len(lines), 1)  # Only the #!ctsdata line
+
+	def test_to_cex_round_trip(self):
+		"""Test that corpus can be converted to CEX and back without data loss."""
+		hyginus_path = os.path.join(self.test_data_dir, "hyginus.cex")
+		original_corpus = CitableCorpus.from_cex_file(hyginus_path)
+		
+		# Convert to CEX string
+		cex_string = original_corpus.to_cex()
+		
+		# Parse back from CEX string - need to add #!cexversion header for full CEX
+		full_cex = "#!cexversion\n3.0\n\n" + cex_string
+		
+		# Write to temp location and read back
+		import tempfile
+		with tempfile.NamedTemporaryFile(mode='w', suffix='.cex', delete=False) as f:
+			f.write(full_cex)
+			temp_path = f.name
+		
+		try:
+			reconstructed_corpus = CitableCorpus.from_cex_file(temp_path)
+			
+			# Should have same number of passages
+			self.assertEqual(len(reconstructed_corpus), len(original_corpus))
+			
+			# First and last passages should match
+			self.assertEqual(str(reconstructed_corpus.passages[0].urn), str(original_corpus.passages[0].urn))
+			self.assertEqual(reconstructed_corpus.passages[0].text, original_corpus.passages[0].text)
+			self.assertEqual(str(reconstructed_corpus.passages[-1].urn), str(original_corpus.passages[-1].urn))
+			self.assertEqual(reconstructed_corpus.passages[-1].text, original_corpus.passages[-1].text)
+		finally:
+			os.unlink(temp_path)
+
+	def test_to_cex_preserves_order(self):
+		"""Test that to_cex preserves the order of passages."""
+		corpus = CitableCorpus.from_string(self.input_str)
+		cex_output = corpus.to_cex(include_label=False)
+		
+		lines = cex_output.strip().split('\n')
+		self.assertEqual(len(lines), 2)
+		
+		# First line should be first passage
+		self.assertTrue(lines[0].startswith("urn:cts:latinLit:phi0959.phi006:1.1"))
+		# Second line should be second passage
+		self.assertTrue(lines[1].startswith("urn:cts:latinLit:phi0959.phi006:1.2"))
+
 if __name__ == "__main__":
 	unittest.main()
