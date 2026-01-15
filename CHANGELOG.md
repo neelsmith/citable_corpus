@@ -10,8 +10,8 @@ Initial release.
 
 ### Added
 
-- `CtsPassage` class to represent a citable passage of text and `CitableCorpus` class to represent a collection of passages.
-- Methods to create a `CitableCorpus` from CEX files and URLs.
-- URN-based retrieval of passages, including support for passage ranges.
+- `CtsPassage` class to represent a citable passage of text and methods for creating passages from delimited strings.
+- `CitableCorpus` class to represent a collection of passages, methods to create a `CitableCorpus` from CEX files and URLs.
+- URN-based retrieval of passages from a corpus, including support for passage ranges.
 - Documentation and usage examples in the README.
 

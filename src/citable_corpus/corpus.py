@@ -14,7 +14,6 @@ class CitableCorpus(BaseModel):
     """
     passages: List[CitablePassage]
 
-
     def __len__(self) -> int:
         """Get the number of passages in the corpus.
         
@@ -77,6 +76,22 @@ class CitableCorpus(BaseModel):
         passages = [CitablePassage.from_string(line, delimiter) for line in datalines]
         return cls(passages=passages)
 
+    def to_cex(self, delimiter: str = "|", include_label = True) -> str:
+        """Convert the CitableCorpus to a CEX-formatted string.
+        
+        Args:
+            delimiter (str): The delimiter separating the urn and text. Default is '|'.
+            include_label (bool): Whether to include the ctsdata label block. Default is True.
+        
+        Returns:
+            str: The CEX-formatted string.
+        """
+        data_lines = [f"{p.urn}{delimiter}{p.text}" for p in self.passages]
+        cex_block = CexBlock(label="ctsdata", data=data_lines)
+        if include_label:
+            return cex_block.to_cex()
+        else:
+            return "\n".join(data_lines)
 
     def retrieve_range(self, ref: CtsUrn) -> List[CitablePassage]:
         """Retrieve passages from the corpus matching a given CtsUrn range reference.
@@ -98,9 +113,6 @@ class CitableCorpus(BaseModel):
             begin_index = self.passages.index(begin_list[0])
             end_index = self.passages.index(end_list[0])
             return self.passages[begin_index:end_index + 1]
-
-
-    
 
     def retrieve(self, ref: CtsUrn) -> List[CitablePassage]:
         """Retrieve passages from the corpus matching a given CtsUrn reference.
