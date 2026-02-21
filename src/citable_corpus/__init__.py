@@ -9,5 +9,8 @@ except PackageNotFoundError:
 
 from .passage import CitablePassage
 from .corpus import CitableCorpus
+from .markupreader import TEIDivAbReader
 
-__all__ = ["CitablePassage", "CitableCorpus"]
+
+__all__ = ["CitablePassage", "CitableCorpus",
+           "TEIDivAbReader"]
