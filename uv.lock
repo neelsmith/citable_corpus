@@ -56,7 +56,7 @@ wheels = [
 
 [[package]]
 name = "citable-corpus"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "." }
 dependencies = [
     { name = "cite-exchange" },
@@ -75,7 +75,7 @@ requires-dist = [
     { name = "cite-exchange", specifier = ">=0.2.0" },
     { name = "ipython" },
     { name = "pydantic" },
-    { name = "urn-citation", specifier = ">=0.4.1" },
+    { name = "urn-citation", specifier = ">=0.7.2" },
 ]
 
 [package.metadata.requires-dev]
@@ -415,15 +415,15 @@ wheels = [
 
 [[package]]
 name = "urn-citation"
-version = "0.4.1"
+version = "0.7.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "ipython" },
     { name = "pydantic" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/52/cb/9ddf04663bee6d90348bb7fd0b6f9dacdf42bf8845784fea92762e01664b/urn_citation-0.4.1.tar.gz", hash = "sha256:4485034f5613155260b7a2af464cc7d053f7ee7f3c99ad6c2ea12e8f99d05438", size = 47798, upload-time = "2026-01-15T19:32:01.231Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ce/09/25713f9ce5b8403c19697656d3a788439ec13f3717a8f4e74162feb8e83c/urn_citation-0.7.2.tar.gz", hash = "sha256:398d98aacb60809410f156fe08b9e080781ab76cbaaa76ff08b6d7eb8aba2bcc", size = 58612, upload-time = "2026-01-21T18:20:41.808Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d2/60/133ead35dff4ecf2a9744dd4a8222991f07dfbccd18a2784ab990a6cfe6c/urn_citation-0.4.1-py3-none-any.whl", hash = "sha256:134ab1e82cc567db64439341e31e2205bf29262c75e0d00df715d9288e83143c", size = 17941, upload-time = "2026-01-15T19:31:59.922Z" },
+    { url = "https://files.pythonhosted.org/packages/01/b6/e0a9fd06ebcbda4275e7cdb812c48eeb71f67081cd472597b12dc3ba5e38/urn_citation-0.7.2-py3-none-any.whl", hash = "sha256:7cbb3a3b001a260ac33e0f17379174f6930f8f7d0116fccbc52b18ffc8cbaf7d", size = 22250, upload-time = "2026-01-21T18:20:40.527Z" },
 ]
 
 [[package]]
