@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 from xml.dom import minidom
 from .corpus import CitableCorpus, CitablePassage
 
-from nbs.testxml import walkdomtree
 
 class EditionBuilder(ABC):
     @abstractmethod
