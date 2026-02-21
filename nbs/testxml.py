@@ -194,6 +194,40 @@ def _(mo):
 
 
 @app.cell
+def _(ET, currentpassage):
+    if currentpassage:
+        psgtext = currentpassage[0].text
+        psgtree = ET.fromstring(psgtext)
+    return (psgtree,)
+
+
+@app.cell
+def _(psgtree):
+    psgtree
+    return
+
+
+@app.cell
+def _():
+    # Function to walk down and extract branches
+    def process_branch(element, cumulation):
+        # Check if the current element is what we're looking for
+        #if element.tag == target_tag:
+            # Serialize the current sub-tree to a string
+         #   branch_xml = ET.tostring(element, encoding='unicode', method='xml')
+         #   print(f"--- Found {target_tag} ---")
+         #   print(branch_xml)
+    
+        # Continue walking the tree
+        for child in element:
+            process_branch(child, cumulation)
+
+    # Start the traversal
+    #process_branch(root, []])
+    return
+
+
+@app.cell
 def _():
     import xml.etree.ElementTree as ET
 
