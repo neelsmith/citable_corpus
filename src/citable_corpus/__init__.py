@@ -10,7 +10,10 @@ except PackageNotFoundError:
 from .passage import CitablePassage
 from .corpus import CitableCorpus
 from .markupreader import TEIDivAbReader
+from .editionbuilders import extract_text, TEIDiplomatic, TEINormalized
 
 
-__all__ = ["CitablePassage", "CitableCorpus",
-           "TEIDivAbReader"]
+__all__ = ["CitablePassage", 
+           "CitableCorpus",
+           "TEIDivAbReader", 
+           "extract_text", "TEIDiplomatic", "TEINormalized"]

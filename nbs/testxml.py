@@ -1,7 +1,10 @@
 # /// script
 # dependencies = [
+#     "citable-corpus==0.1.0",
 #     "cite-exchange==0.2.0",
+#     "lxml==6.0.2",
 #     "marimo",
+#     "nbs==0.0.9",
 #     "pydantic==2.12.5",
 #     "requests==2.32.5",
 #     "urn-citation==0.7.2",
@@ -24,7 +27,9 @@ def _():
 
 @app.cell(hide_code=True)
 def _(bookchoice, chapterchoice, mo, passagechoice):
-    mo.md(f"*Book* {bookchoice} *Chapter* {chapterchoice} *passage* {passagechoice}")
+    mo.md(f"""
+    *Book* {bookchoice} *Chapter* {chapterchoice} *passage* {passagechoice}
+    """)
     return
 
 
@@ -34,7 +39,6 @@ def _(currentpassage, mo):
     if currentpassage:
         showme = mo.md("\n\n".join([psg.text for psg in currentpassage]))
     showme    
-
     return
 
 
@@ -43,7 +47,6 @@ def _(corp, currentu):
     currentpassage = None
     if currentu:
         currentpassage = corp.retrieve(currentu)
-
     return (currentpassage,)
 
 
@@ -65,7 +68,7 @@ def _(mo):
 def _():
     import citable_corpus as cc
 
-    return (cc,)
+    return
 
 
 @app.cell
@@ -108,8 +111,8 @@ def _():
 
 
 @app.cell
-def _(baseurn, cc, src):
-    corp = cc.TEIDivAbReader(src, baseurn).corpus()
+def _(TEIDivAbReader, baseurn, src):
+    corp = TEIDivAbReader(src, baseurn).corpus()
     return (corp,)
 
 
@@ -217,7 +220,7 @@ def _():
          #   branch_xml = ET.tostring(element, encoding='unicode', method='xml')
          #   print(f"--- Found {target_tag} ---")
          #   print(branch_xml)
-    
+
         # Continue walking the tree
         for child in element:
             process_branch(child, cumulation)
@@ -299,24 +302,179 @@ def _(ET, baseurn, divlist, nsdict):
             u = u1 + "." + ab.get('n')
             line = u + "|" + ET.tostring(ab, encoding='unicode')
             flatlines.append(line)
-    return (flatlines,)
-
-
-@app.cell
-def _(flatlines):
-    flatlines
     return
 
 
 @app.cell
-def _(divlist):
-    [div.get('n') for div in divlist]
+def _():
+    #flatlines
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    #[div.get('n') for div in divlist]
     return
 
 
 @app.cell
-def _(divlist):
-    divlist
+def _():
+    #divlist
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md("""
+    ## XML with minidom
+    """)
+    return
+
+
+@app.cell
+def _():
+    from xml.dom import minidom
+
+    return (minidom,)
+
+
+@app.cell
+def _(f, minidom):
+    parseddoc = minidom.parse(str(f))
+    return (parseddoc,)
+
+
+@app.cell
+def _():
+    tei = "http://www.tei-c.org/ns/1.0"
+    return (tei,)
+
+
+@app.cell
+def _(parseddoc, tei):
+    body = parseddoc.getElementsByTagNameNS(tei, "body")[0]
+    return (body,)
+
+
+@app.cell
+def _(body):
+    body
+    return
+
+
+@app.cell
+def _(body):
+    el_values = sorted(set(collectelnames(body,[]))) 
+    el_values
+    return
+
+
+@app.cell
+def _(currentpassage):
+    xmltext = ""
+    if currentpassage:
+        xmltext = currentpassage[0].text
+    return (xmltext,)
+
+
+@app.function
+def collectelnames(element, namelist):
+    # Continue walking the tree
+    for ch in element.childNodes:
+        if ch.nodeType == ch.ELEMENT_NODE:
+            namelist.append(ch.localName)
+            collectelnames(ch, namelist)
+
+
+
+    return namelist
+
+
+@app.cell
+def _(domroot):
+    elnames = None
+    if domroot:
+       elnames = collectelnames(domroot, [])
+    elnames
+    return
+
+
+@app.cell
+def _(minidom, xmltext):
+    readable = None
+    if xmltext:
+        dom = minidom.parseString(xmltext)
+        domroot = dom.documentElement
+        readable = walkdomtree(domroot, [])
+
+    readable    
+    return (domroot,)
+
+
+@app.function
+def walkdomtree(element, cumulation):
+
+
+    # Continue walking the tree
+    for kid in element.childNodes:
+        if kid.nodeType == kid.ELEMENT_NODE:
+            cumulation.append(f"- Found element: `{kid.localName}`")
+            walkdomtree(kid, cumulation)
+        elif kid.nodeType == kid.TEXT_NODE:
+            cumulation.append(f"- Found text content: '{kid.data}")
+
+    return cumulation
+
+
+@app.cell
+def _(mo):
+    minidomlines = []
+    #for node in domroot.childNodes:
+    #    if node.nodeType == node.ELEMENT_NODE:
+    #        minidomlines.append(f"- Found element: `{node.localName}`")
+    #    elif node.nodeType == node.TEXT_NODE:
+    #        minidomlines.append(f"- Found text content: **{node.data.strip()}**")
+    #for node in dom.getElementsByTagNameNS("http://example.com", "div"):
+    #print(f"Found element: {node.localName} in namespace: {node.namespaceURI}")
+    mo.md("\n".join(minidomlines) )
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md("""
+    ## Use `lxml`
+    """)
+    return
+
+
+@app.cell
+def _():
+    from lxml import etree
+
+    return (etree,)
+
+
+@app.cell
+def _(currentpassage, etree):
+    lxmltree = None
+    if currentpassage:
+        lxmltree = etree.fromstring(currentpassage[0].text)
+
+    lxmltree    
+    return (lxmltree,)
+
+
+@app.cell
+def _(etree, lxmltree, mo):
+    lxmllines = []
+    for nd in lxmltree.getchildren():
+        if isinstance(nd, etree._Element):
+            lxmllines.append(f"- Element: {nd.tag}")
+        elif isinstance(nd, etree._Text):
+            lxmllines.append(f"- Text node content: **{nd}**")
+
+    mo.md("\n".join(lxmllines))
     return
 
 
