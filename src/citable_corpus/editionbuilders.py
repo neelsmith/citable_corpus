@@ -1,21 +1,25 @@
 from abc import ABC, abstractmethod
 from xml.dom import minidom
 from .corpus import CitableCorpus, CitablePassage
-
+from .markupreader import MarkupReader
 
 class EditionBuilder(ABC):
     @abstractmethod
-    def edition(self):
+    def edition(xmlcorpus: CitableCorpus):
         pass
+    
+
 
 teins = "http://www.tei-c.org/ns/1.0"
 
 def tidy_ws(text):
+    "Clean up whitespace in a string by reducing each sequence of whitespace characters to a single space, and stripping leading/trailing whitespace."
     # .split() splits on any whitespace and removes empty segments
     # " ".join() puts the resulting words back together with a single space
     return " ".join(text.split())
 
 def extract_text(node, cumulation, omitlist):
+    "Recursively extract text from an XML node, omitting contents of specified elements. Text from included nodes is accumulated in the `cumulation` list."
     # Continue walking the tree
     for kid in node.childNodes:
         if kid.nodeType == kid.TEXT_NODE:
@@ -26,13 +30,13 @@ def extract_text(node, cumulation, omitlist):
     return "".join(cumulation)
 
 class TEIDiplomatic(EditionBuilder):
-    def __init__(self, xmlcorpus: CitableCorpus):
-        self.xmlcorpus = xmlcorpus
-    
-    def edition(self):
+
+    def edition(xmlcorpus: CitableCorpus):
+        "Compose a citable diplomatic edition by extracting text from the XML of each passage in the corpus, omitting specified elements."
+
         omitlist = ['expan'] 
         
-        plist = self.xmlcorpus.passages
+        plist = xmlcorpus.passages
         psgs = []
         for p in plist:
             extracted = extract_text(minidom.parseString(p.text).documentElement, [],  omitlist )
@@ -41,12 +45,24 @@ class TEIDiplomatic(EditionBuilder):
             #tidy = tidy_ws(' '.join(extracted))
 
             psgs.append(CitablePassage(urn = p.urn,text = extracted )) 
-            
-        return CitableCorpus(passages = psgs)
+            fullurls = [CitablePassage(urn = p.urn.set_exemplar("diplomatic"), text =p.text) for p in psgs] 
+        return CitableCorpus(passages = fullurls)
     
 class TEINormalized(EditionBuilder):
-    def __init__(self, side):
-        self.side = side
+    "Compose a citable normalized edition by extracting text from the XML of each passage in the corpus, omitting specified elements."
+    def edition(xmlcorpus: CitableCorpus):
+        omitlist = ['abbr'] 
+        
+        plist = xmlcorpus.passages
+        psgs = []
+        for p in plist:
+            extracted = extract_text(minidom.parseString(p.text).documentElement, [],  omitlist )
+
+            # What's up?
+            #tidy = tidy_ws(' '.join(extracted))
+
+            psgs.append(CitablePassage(urn = p.urn,text = extracted )) 
+
+        fullurls = [CitablePassage(urn = p.urn.set_exemplar("normalized"), text =p.text) for p in psgs] 
+        return CitableCorpus(passages = fullurls)     
     
-    def edition(self):
-        return ""     

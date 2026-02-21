@@ -6,34 +6,28 @@ from .corpus import CitableCorpus
 
 class MarkupReader(ABC):
     @abstractmethod
-    def cex(self):
+    def cex(xmlstring, baseurn):
         pass
 
     @abstractmethod
-    def corpus(self) -> CitableCorpus:
+    def corpus(xmlstring, baseurn) -> CitableCorpus:
         pass
     
-
-
-
 nsdict = {'tei': 'http://www.tei-c.org/ns/1.0'}
 
 class TEIDivAbReader(MarkupReader):
-    def __init__(self, txt,urnbase):
-        self.xml = txt
-        self.urnbase = urnbase
  
-    def corpus(self) -> CitableCorpus:
-        return CitableCorpus.from_string(self.cex(), delimiter="|")
+    def corpus(txt, urnbase) -> CitableCorpus:
+        return CitableCorpus.from_string(TEIDivAbReader.cex(txt, urnbase), delimiter="|")
 
     
-    def cex(self):
-        parsed = ET.fromstring(self.xml)
+    def cex(xmlstring, baseurn):
+        parsed = ET.fromstring(xmlstring)
         #root = parsed.getroot()
         flatlines = []
         divlist = [div for div in parsed.findall('./tei:text/tei:body/tei:div', nsdict)]
         for d in divlist:
-            u1 = self.urnbase + d.get('n')
+            u1 = baseurn + d.get('n')
             sub_abs = d.findall('./tei:ab', nsdict)
             #flatlines.append(f"Found {len(sub_abs)} ab childredn of div {d.get('n')}")
             for ab in d.findall('./tei:ab', nsdict):

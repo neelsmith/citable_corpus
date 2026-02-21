@@ -26,7 +26,7 @@ class TestMarkupReader(unittest.TestCase):
 
 
 class TestTEIDivAbReader(unittest.TestCase):
-    """Test the TEIDivAbReader implementation."""
+    """Test the TEIDivAbReader implementation with static methods."""
     
     def setUp(self):
         """Set up test fixtures."""
@@ -78,20 +78,13 @@ class TestTEIDivAbReader(unittest.TestCase):
         
         self.urnbase = "urn:cts:latinLit:phi0959.phi006:"
     
-    def test_initialization(self):
-        """Test TEIDivAbReader initialization."""
-        reader = TEIDivAbReader(self.simple_xml, self.urnbase)
-        self.assertEqual(reader.xml, self.simple_xml)
-        self.assertEqual(reader.urnbase, self.urnbase)
-    
     def test_is_markup_reader_subclass(self):
         """Test that TEIDivAbReader is a subclass of MarkupReader."""
         self.assertTrue(issubclass(TEIDivAbReader, MarkupReader))
     
     def test_cex_simple_structure(self):
-        """Test cex() method with simple XML structure."""
-        reader = TEIDivAbReader(self.simple_xml, self.urnbase)
-        cex_output = reader.cex()
+        """Test cex() static method with simple XML structure."""
+        cex_output = TEIDivAbReader.cex(self.simple_xml, self.urnbase)
         
         # Split into lines and verify
         lines = cex_output.strip().split("\n")
@@ -107,8 +100,7 @@ class TestTEIDivAbReader(unittest.TestCase):
     
     def test_cex_multiple_divs(self):
         """Test cex() method with multiple div elements."""
-        reader = TEIDivAbReader(self.multi_div_xml, self.urnbase)
-        cex_output = reader.cex()
+        cex_output = TEIDivAbReader.cex(self.multi_div_xml, self.urnbase)
         
         lines = cex_output.strip().split("\n")
         self.assertEqual(len(lines), 4)
@@ -121,8 +113,7 @@ class TestTEIDivAbReader(unittest.TestCase):
     
     def test_cex_whitespace_normalization(self):
         """Test that cex() normalizes whitespace correctly."""
-        reader = TEIDivAbReader(self.formatted_xml, self.urnbase)
-        cex_output = reader.cex()
+        cex_output = TEIDivAbReader.cex(self.formatted_xml, self.urnbase)
         
         lines = cex_output.strip().split("\n")
         
@@ -136,8 +127,7 @@ class TestTEIDivAbReader(unittest.TestCase):
     
     def test_cex_preserves_markup(self):
         """Test that cex() preserves XML markup within ab elements."""
-        reader = TEIDivAbReader(self.formatted_xml, self.urnbase)
-        cex_output = reader.cex()
+        cex_output = TEIDivAbReader.cex(self.formatted_xml, self.urnbase)
         
         lines = cex_output.strip().split("\n")
         
@@ -147,31 +137,27 @@ class TestTEIDivAbReader(unittest.TestCase):
         self.assertIn("expan>", lines[1])
     
     def test_corpus_returns_citable_corpus(self):
-        """Test that corpus() returns a CitableCorpus object."""
-        reader = TEIDivAbReader(self.simple_xml, self.urnbase)
-        corpus = reader.corpus()
+        """Test that corpus() static method returns a CitableCorpus object."""
+        corpus = TEIDivAbReader.corpus(self.simple_xml, self.urnbase)
         
         self.assertIsInstance(corpus, CitableCorpus)
     
     def test_corpus_has_correct_passage_count(self):
         """Test that corpus() returns correct number of passages."""
-        reader = TEIDivAbReader(self.multi_div_xml, self.urnbase)
-        corpus = reader.corpus()
+        corpus = TEIDivAbReader.corpus(self.multi_div_xml, self.urnbase)
         
         self.assertEqual(len(corpus.passages), 4)
     
     def test_corpus_passages_have_correct_urns(self):
         """Test that corpus passages have correctly formed URNs."""
-        reader = TEIDivAbReader(self.simple_xml, self.urnbase)
-        corpus = reader.corpus()
+        corpus = TEIDivAbReader.corpus(self.simple_xml, self.urnbase)
         
         self.assertEqual(str(corpus.passages[0].urn), "urn:cts:latinLit:phi0959.phi006:1.1")
         self.assertEqual(str(corpus.passages[1].urn), "urn:cts:latinLit:phi0959.phi006:1.2")
     
     def test_corpus_passages_have_correct_text(self):
         """Test that corpus passages contain the expected text."""
-        reader = TEIDivAbReader(self.simple_xml, self.urnbase)
-        corpus = reader.corpus()
+        corpus = TEIDivAbReader.corpus(self.simple_xml, self.urnbase)
         
         # Text should contain the ab content (with XML tags)
         self.assertIn("First passage text.", corpus.passages[0].text)
@@ -188,8 +174,7 @@ class TestTEIDivAbReader(unittest.TestCase):
     </body>
   </text>
 </TEI>"""
-        reader = TEIDivAbReader(empty_div_xml, self.urnbase)
-        cex_output = reader.cex()
+        cex_output = TEIDivAbReader.cex(empty_div_xml, self.urnbase)
         
         # Should produce empty string or no lines
         self.assertEqual(cex_output.strip(), "")
@@ -203,8 +188,7 @@ class TestTEIDivAbReader(unittest.TestCase):
     </body>
   </text>
 </TEI>"""
-        reader = TEIDivAbReader(no_div_xml, self.urnbase)
-        cex_output = reader.cex()
+        cex_output = TEIDivAbReader.cex(no_div_xml, self.urnbase)
         
         self.assertEqual(cex_output.strip(), "")
     
@@ -216,8 +200,7 @@ class TestTEIDivAbReader(unittest.TestCase):
             with open(xml_path, 'r', encoding='utf-8') as f:
                 xml_content = f.read()
             
-            reader = TEIDivAbReader(xml_content, "urn:cts:greekLit:tlg0527.tlg001.lat:")
-            corpus = reader.corpus()
+            corpus = TEIDivAbReader.corpus(xml_content, "urn:cts:greekLit:tlg0527.tlg001.lat:")
             
             # Should have passages
             self.assertGreater(len(corpus.passages), 0)
@@ -234,8 +217,7 @@ class TestTEIDivAbReader(unittest.TestCase):
     def test_urnbase_format(self):
         """Test that urnbase should not have a trailing dot."""
         # URNbase should not end with a dot; the code concatenates with '.'
-        reader = TEIDivAbReader(self.simple_xml, self.urnbase)
-        cex_output = reader.cex()
+        cex_output = TEIDivAbReader.cex(self.simple_xml, self.urnbase)
         
         lines = cex_output.strip().split("\n")
         # Verify URNs are properly formed with correct number of colons
@@ -246,8 +228,7 @@ class TestTEIDivAbReader(unittest.TestCase):
     
     def test_cex_output_format(self):
         """Test that CEX output has correct delimiter format."""
-        reader = TEIDivAbReader(self.simple_xml, self.urnbase)
-        cex_output = reader.cex()
+        cex_output = TEIDivAbReader.cex(self.simple_xml, self.urnbase)
         
         lines = cex_output.strip().split("\n")
         for line in lines:
@@ -255,6 +236,32 @@ class TestTEIDivAbReader(unittest.TestCase):
             parts = line.split("|")
             self.assertGreaterEqual(len(parts), 2, "CEX line should have at least URN|text")
             self.assertTrue(parts[0].startswith("urn:"), "First part should be a URN")
+    
+    def test_cex_with_different_baseurn(self):
+        """Test cex() with a different base URN."""
+        baseurn = "urn:cts:greekLit:tlg0012.tlg001:"
+        cex_output = TEIDivAbReader.cex(self.simple_xml, baseurn)
+        
+        lines = cex_output.strip().split("\n")
+        self.assertIn("urn:cts:greekLit:tlg0012.tlg001:1.1|", lines[0])
+        self.assertIn("urn:cts:greekLit:tlg0012.tlg001:1.2|", lines[1])
+    
+    def test_corpus_integration(self):
+        """Test that corpus() correctly uses cex() output."""
+        # Test that corpus() is properly calling cex() and parsing result
+        corpus = TEIDivAbReader.corpus(self.multi_div_xml, self.urnbase)
+        
+        # Verify all passages are present
+        self.assertEqual(len(corpus.passages), 4)
+        
+        # Verify passages match what cex() produces
+        cex_output = TEIDivAbReader.cex(self.multi_div_xml, self.urnbase)
+        cex_lines = cex_output.strip().split("\n")
+        
+        for i, line in enumerate(cex_lines):
+            urn_str, text = line.split("|", 1)
+            self.assertEqual(str(corpus.passages[i].urn), urn_str)
+            self.assertIn(text, corpus.passages[i].text)
 
 
 if __name__ == '__main__':
