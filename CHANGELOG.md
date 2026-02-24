@@ -7,11 +7,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## 0.3.0 - 2026-02-24
 
-## Breaking changes
+### Breaking changes
 
 - in `CitablePassage` and `CitableCorpus` classes, the method `from_string` has been renamed to `from_delimited`
 
-## Added
+### Added
 
 - new methods `cex` in the `CitablePassage` and `CitableCorpus` classes to serialize objects to CEX delimited-text format
 
