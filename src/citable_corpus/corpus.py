@@ -25,8 +25,17 @@ class CitableCorpus(BaseModel):
     def __str__(self):
         return f"Corpus with {len(self.passages)}citable passages."
     
+
+    def cex(self, delimiter: str = "|", label_block = False) -> str:
+        """Return a CEX string representation of the CitableCorpus."""
+        data_lines = [f"{p.urn}{delimiter}{p.text}" for p in self.passages]
+        if label_block:
+            return "#!ctsdata\n" + "\n".join(data_lines)
+        else:
+            return "\n".join(data_lines)
+
     @classmethod
-    def from_string(cls, s: str, delimiter: str = "|") -> CitableCorpus:
+    def from_delimited(cls, s: str, delimiter: str = "|") -> CitableCorpus:
         """Create a CitableCorpus from a delimited-text string.
         
         Args:
@@ -38,7 +47,7 @@ class CitableCorpus(BaseModel):
         """
         passages = []
         for line in s.strip().splitlines():
-            passage = CitablePassage.from_string(line, delimiter)
+            passage = CitablePassage.from_delimited(line, delimiter)
             passages.append(passage)
         return cls(passages=passages)
     
@@ -56,7 +65,7 @@ class CitableCorpus(BaseModel):
         textblocks = CexBlock.from_file(f, "ctsdata")
         datablocks = [b.data for b in textblocks]
         datalines = list(itertools.chain.from_iterable(datablocks))
-        passages = [CitablePassage.from_string(line, delimiter) for line in datalines]
+        passages = [CitablePassage.from_delimited(line, delimiter) for line in datalines]
         return cls(passages=passages)
 
     @classmethod
@@ -73,7 +82,7 @@ class CitableCorpus(BaseModel):
         textblocks = CexBlock.from_url(url, "ctsdata")
         datablocks = [b.data for b in textblocks]
         datalines = list(itertools.chain.from_iterable(datablocks))
-        passages = [CitablePassage.from_string(line, delimiter) for line in datalines]
+        passages = [CitablePassage.from_delimited(line, delimiter) for line in datalines]
         return cls(passages=passages)
 
     def to_cex(self, delimiter: str = "|", include_label = True) -> str:

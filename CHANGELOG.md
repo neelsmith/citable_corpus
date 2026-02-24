@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## 0.3.0 - 2026-02-24
+
+## Breaking changes
+
+- in `CitablePassage` and `CitableCorpus` classes, the method `from_string` has been renamed to `from_delimited`
+
+## Added
+
+- new methods `cex` in the `CitablePassage` and `CitableCorpus` classes to serialize objects to CEX delimited-text format
+
+
+
 ## 0.2.0 - 2026-02-21 
 
 ### Added

@@ -18,7 +18,7 @@ nsdict = {'tei': 'http://www.tei-c.org/ns/1.0'}
 class TEIDivAbReader(MarkupReader):
  
     def corpus(txt, urnbase) -> CitableCorpus:
-        return CitableCorpus.from_string(TEIDivAbReader.cex(txt, urnbase), delimiter="|")
+        return CitableCorpus.from_delimited(TEIDivAbReader.cex(txt, urnbase), delimiter="|")
 
     
     def cex(xmlstring, baseurn):

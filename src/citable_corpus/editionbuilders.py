@@ -12,6 +12,11 @@ class EditionBuilder(ABC):
 
 teins = "http://www.tei-c.org/ns/1.0"
 
+def set_edition_exemplar(urn, exemplar):
+    "Set exemplar on a CTS URN, ensuring a version component exists first."
+    versioned = urn if urn.version is not None else urn.set_version("v1")
+    return versioned.set_exemplar(exemplar)
+
 def tidy_ws(text):
     "Clean up whitespace in a string by reducing each sequence of whitespace characters to a single space, and stripping leading/trailing whitespace."
     # .split() splits on any whitespace and removes empty segments
@@ -45,7 +50,8 @@ class TEIDiplomatic(EditionBuilder):
             #tidy = tidy_ws(' '.join(extracted))
 
             psgs.append(CitablePassage(urn = p.urn,text = extracted )) 
-            fullurls = [CitablePassage(urn = p.urn.set_exemplar("diplomatic"), text =p.text) for p in psgs] 
+
+        fullurls = [CitablePassage(urn = set_edition_exemplar(p.urn, "diplomatic"), text =p.text) for p in psgs]
         return CitableCorpus(passages = fullurls)
     
 class TEINormalized(EditionBuilder):
@@ -63,6 +69,6 @@ class TEINormalized(EditionBuilder):
 
             psgs.append(CitablePassage(urn = p.urn,text = extracted )) 
 
-        fullurls = [CitablePassage(urn = p.urn.set_exemplar("normalized"), text =p.text) for p in psgs] 
+        fullurls = [CitablePassage(urn = set_edition_exemplar(p.urn, "normalized"), text =p.text) for p in psgs] 
         return CitableCorpus(passages = fullurls)     
     

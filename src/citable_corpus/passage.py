@@ -14,8 +14,13 @@ class CitablePassage(BaseModel):
     def __str__(self):
         return f"{self.urn}: {self.text}"
     
+    def cex(self, delimiter = "|") -> str:
+        """Return a CEX string representation of the CitablePassage."""
+        return f"{str(self.urn)}{delimiter}{self.text}"
+
+
     @classmethod
-    def from_string(cls, src: str, delimiter: str = "|") -> "CitablePassage":
+    def from_delimited(cls, src: str, delimiter: str = "|") -> "CitablePassage":
         """Create a CitablePassage from a delimited-text string.
         
         Args:

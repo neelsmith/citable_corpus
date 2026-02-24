@@ -14,8 +14,8 @@ class TestCitableCorpus(unittest.TestCase):
 		self.input_str = "\n".join(self.lines)
 		self.test_data_dir = os.path.join(os.path.dirname(__file__), "data")
 
-	def test_from_string_default_delimiter(self):
-		corpus = CitableCorpus.from_string(self.input_str)
+	def test_from_delimited_default_delimiter(self):
+		corpus = CitableCorpus.from_delimited(self.input_str)
 		self.assertEqual(len(corpus.passages), 2)
 		self.assertEqual(str(corpus.passages[0].urn), "urn:cts:latinLit:phi0959.phi006:1.1")
 		self.assertEqual(corpus.passages[0].text, "Lorem ipsum")
@@ -24,13 +24,13 @@ class TestCitableCorpus(unittest.TestCase):
 
 	def test_len_with_passages(self):
 		"""Test __len__ method returns correct count."""
-		corpus = CitableCorpus.from_string(self.input_str)
+		corpus = CitableCorpus.from_delimited(self.input_str)
 		self.assertEqual(len(corpus), 2)
 		self.assertEqual(len(corpus), len(corpus.passages))
 
 	def test_len_empty_corpus(self):
 		"""Test __len__ method with empty corpus."""
-		corpus = CitableCorpus.from_string("")
+		corpus = CitableCorpus.from_delimited("")
 		self.assertEqual(len(corpus), 0)
 
 	def test_len_with_cex_file(self):
@@ -41,29 +41,29 @@ class TestCitableCorpus(unittest.TestCase):
 		self.assertEqual(len(corpus), 1234)
 		self.assertEqual(len(corpus), len(corpus.passages))
 
-	def test_from_string_custom_delimiter(self):
+	def test_from_delimited_custom_delimiter(self):
 		lines = [
 			"urn:cts:latinLit:phi0959.phi006:1.1---Lorem ipsum",
 			"urn:cts:latinLit:phi0959.phi006:1.2---Dolor sit amet."
 		]
 		input_str = "\n".join(lines)
-		corpus = CitableCorpus.from_string(input_str, delimiter="---")
+		corpus = CitableCorpus.from_delimited(input_str, delimiter="---")
 		self.assertEqual(len(corpus.passages), 2)
 		self.assertEqual(corpus.passages[0].text, "Lorem ipsum")
 		self.assertEqual(corpus.passages[1].text, "Dolor sit amet.")
 
-	def test_from_string_with_whitespace(self):
+	def test_from_delimited_with_whitespace(self):
 		lines = [
 			"  urn:cts:latinLit:phi0959.phi006:1.1  |  Lorem ipsum  ",
 			"urn:cts:latinLit:phi0959.phi006:1.2|  Dolor sit amet."
 		]
 		input_str = "\n".join(lines)
-		corpus = CitableCorpus.from_string(input_str)
+		corpus = CitableCorpus.from_delimited(input_str)
 		self.assertEqual(corpus.passages[0].text, "Lorem ipsum")
 		self.assertEqual(corpus.passages[1].text, "Dolor sit amet.")
 
-	def test_from_string_empty_input(self):
-		corpus = CitableCorpus.from_string("")
+	def test_from_delimited_empty_input(self):
+		corpus = CitableCorpus.from_delimited("")
 		self.assertEqual(len(corpus.passages), 0)
 
 	def test_from_cex_file_hyginus(self):
@@ -273,7 +273,7 @@ class TestCitableCorpus(unittest.TestCase):
 
 	def test_to_cex_with_label(self):
 		"""Test converting corpus to CEX format with label."""
-		corpus = CitableCorpus.from_string(self.input_str)
+		corpus = CitableCorpus.from_delimited(self.input_str)
 		cex_output = corpus.to_cex()
 		
 		# Should include the #!ctsdata label
@@ -289,7 +289,7 @@ class TestCitableCorpus(unittest.TestCase):
 
 	def test_to_cex_without_label(self):
 		"""Test converting corpus to CEX format without label."""
-		corpus = CitableCorpus.from_string(self.input_str)
+		corpus = CitableCorpus.from_delimited(self.input_str)
 		cex_output = corpus.to_cex(include_label=False)
 		
 		# Should NOT include the #!ctsdata label
@@ -299,13 +299,13 @@ class TestCitableCorpus(unittest.TestCase):
 		self.assertIn("urn:cts:latinLit:phi0959.phi006:1.1|Lorem ipsum", cex_output)
 		self.assertIn("urn:cts:latinLit:phi0959.phi006:1.2|Dolor sit amet.", cex_output)
 		
-		# Verify it can be round-tripped with from_string (since no label)
-		corpus2 = CitableCorpus.from_string(cex_output)
+		# Verify it can be round-tripped with from_delimited (since no label)
+		corpus2 = CitableCorpus.from_delimited(cex_output)
 		self.assertEqual(len(corpus2), 2)
 
 	def test_to_cex_custom_delimiter(self):
 		"""Test converting corpus to CEX format with custom delimiter."""
-		corpus = CitableCorpus.from_string(self.input_str)
+		corpus = CitableCorpus.from_delimited(self.input_str)
 		cex_output = corpus.to_cex(delimiter="---", include_label=False)
 		
 		# Should use custom delimiter
@@ -317,7 +317,7 @@ class TestCitableCorpus(unittest.TestCase):
 
 	def test_to_cex_empty_corpus(self):
 		"""Test converting empty corpus to CEX format."""
-		corpus = CitableCorpus.from_string("")
+		corpus = CitableCorpus.from_delimited("")
 		cex_output = corpus.to_cex()
 		
 		# Should include label
@@ -360,7 +360,7 @@ class TestCitableCorpus(unittest.TestCase):
 
 	def test_to_cex_preserves_order(self):
 		"""Test that to_cex preserves the order of passages."""
-		corpus = CitableCorpus.from_string(self.input_str)
+		corpus = CitableCorpus.from_delimited(self.input_str)
 		cex_output = corpus.to_cex(include_label=False)
 		
 		lines = cex_output.strip().split('\n')
@@ -370,6 +370,38 @@ class TestCitableCorpus(unittest.TestCase):
 		self.assertTrue(lines[0].startswith("urn:cts:latinLit:phi0959.phi006:1.1"))
 		# Second line should be second passage
 		self.assertTrue(lines[1].startswith("urn:cts:latinLit:phi0959.phi006:1.2"))
+
+	def test_cex_default_output(self):
+		"""Test cex method returns delimited passage lines by default."""
+		corpus = CitableCorpus.from_delimited(self.input_str)
+		cex_output = corpus.cex()
+
+		self.assertIn("urn:cts:latinLit:phi0959.phi006:1.1|Lorem ipsum", cex_output)
+		self.assertIn("urn:cts:latinLit:phi0959.phi006:1.2|Dolor sit amet.", cex_output)
+		self.assertNotIn("#!ctsdata", cex_output)
+
+	def test_cex_with_label_block(self):
+		"""Test cex method includes ctsdata label when requested."""
+		corpus = CitableCorpus.from_delimited(self.input_str)
+		cex_output = corpus.cex(label_block=True)
+
+		self.assertTrue(cex_output.startswith("#!ctsdata\n"))
+		self.assertIn("urn:cts:latinLit:phi0959.phi006:1.1|Lorem ipsum", cex_output)
+
+	def test_cex_custom_delimiter(self):
+		"""Test cex method supports custom delimiters."""
+		corpus = CitableCorpus.from_delimited(self.input_str)
+		cex_output = corpus.cex(delimiter="---")
+
+		self.assertIn("urn:cts:latinLit:phi0959.phi006:1.1---Lorem ipsum", cex_output)
+		self.assertIn("urn:cts:latinLit:phi0959.phi006:1.2---Dolor sit amet.", cex_output)
+
+	def test_cex_empty_corpus(self):
+		"""Test cex method output for empty corpus."""
+		corpus = CitableCorpus.from_delimited("")
+
+		self.assertEqual(corpus.cex(), "")
+		self.assertEqual(corpus.cex(label_block=True), "#!ctsdata\n")
 
 if __name__ == "__main__":
 	unittest.main()

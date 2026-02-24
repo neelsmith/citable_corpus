@@ -19,33 +19,41 @@ class TestCitablePassage(unittest.TestCase):
         passage = CitablePassage(urn=self.urn, text=self.text)
         self.assertEqual(str(passage), f"{self.urn}: {self.text}")
 
-    def test_from_string_default_delimiter(self):
+    def test_from_delimited_default_delimiter(self):
         s = f"{self.urn_str}|{self.text}"
-        passage = CitablePassage.from_string(s)
+        passage = CitablePassage.from_delimited(s)
         self.assertEqual(str(passage.urn), self.urn_str)
         self.assertEqual(passage.text, self.text)
 
-    def test_from_string_custom_delimiter(self):
+    def test_from_delimited_custom_delimiter(self):
         s = f"{self.urn_str}---{self.text}"
-        passage = CitablePassage.from_string(s, delimiter="---")
+        passage = CitablePassage.from_delimited(s, delimiter="---")
         self.assertEqual(str(passage.urn), self.urn_str)
         self.assertEqual(passage.text, self.text)
 
-    def test_from_string_with_whitespace(self):
+    def test_from_delimited_with_whitespace(self):
         s = f"  {self.urn_str}  |  {self.text}  "
-        passage = CitablePassage.from_string(s)
+        passage = CitablePassage.from_delimited(s)
         self.assertEqual(str(passage.urn), self.urn_str)
         self.assertEqual(passage.text, self.text)
 
-    def test_from_string_invalid_format(self):
+    def test_from_delimited_invalid_format(self):
         s = self.urn_str  # No delimiter
         with self.assertRaises(ValueError):
-            CitablePassage.from_string(s)
+            CitablePassage.from_delimited(s)
 
     def test_attribute_types(self):
         passage = CitablePassage(urn=self.urn, text=self.text)
         self.assertIsInstance(passage.urn, CtsUrn)
         self.assertIsInstance(passage.text, str)
+
+    def test_cex_default_delimiter(self):
+        passage = CitablePassage(urn=self.urn, text=self.text)
+        self.assertEqual(passage.cex(), f"{self.urn_str}|{self.text}")
+
+    def test_cex_custom_delimiter(self):
+        passage = CitablePassage(urn=self.urn, text=self.text)
+        self.assertEqual(passage.cex(delimiter="---"), f"{self.urn_str}---{self.text}")
 
 if __name__ == "__main__":
     unittest.main()
