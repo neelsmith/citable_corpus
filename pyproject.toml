@@ -1,13 +1,13 @@
 [project]
 name = "citable_corpus"
-version = "0.3.0"
+version = "0.3.1"
 description = "A Python library for working with a corpus of texts canonically citable by CtsUrn."
 readme = "README.md"
-requires-python = ">=3.14"
+requires-python = ">=3.13.7"
 dependencies = [
     "ipython",
     "pydantic",
-    "urn-citation>=0.7.2",
+    "urn-citation>=0.7.3",
     "cite-exchange>=0.2.0"
 ]
 

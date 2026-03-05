@@ -159,9 +159,9 @@ print(psg.text)
 
 ## Requirements
 
-- Python >= 3.14
+- Python >= 3.13.7
 - pydantic
-- urn-citation >= 0.4.1
+- urn-citation >= 0.7.3
 - cite-exchange
 
 ## Development

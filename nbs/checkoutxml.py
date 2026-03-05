@@ -7,9 +7,9 @@
 #     "nbs==0.0.9",
 #     "pydantic==2.12.5",
 #     "requests==2.32.5",
-#     "urn-citation==0.7.2",
+#     "urn-citation==0.7.3",
 # ]
-# requires-python = ">=3.14"
+# requires-python = ">=3.13.7"
 # ///
 
 import marimo
